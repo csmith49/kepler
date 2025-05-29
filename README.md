@@ -53,6 +53,13 @@ with experiment("my_experiment", {"learning_rate": 0.01, "batch_size": 32}) as e
     exp.set_metric("final_loss", 0.25)
 ```
 
+### Examples
+
+Check out the examples directory for more detailed examples:
+- `basic_experiment.py`: A simple example of using Kepler for experiment tracking
+- `multiple_experiments.py`: Running multiple experiments with different configurations
+- `kepler_notebook_example.ipynb`: Using Kepler in a Jupyter notebook environment
+
 ### Monitor experiments
 
 Run the TUI to monitor your experiments:
