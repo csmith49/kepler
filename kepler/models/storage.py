@@ -1,10 +1,10 @@
 """
 Storage functionality for experiment data.
 """
+
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -15,7 +15,7 @@ def get_app_dir() -> Path:
     """
     Get the application directory for storing experiment data.
     Uses click's app directory functionality.
-    
+
     Returns:
         Path to the application directory
     """
@@ -27,7 +27,7 @@ def get_app_dir() -> Path:
 def get_experiments_file_path() -> Path:
     """
     Get the path to the experiments file.
-    
+
     Returns:
         Path to the experiments file
     """
@@ -37,7 +37,7 @@ def get_experiments_file_path() -> Path:
 def save_experiments(experiment_list: ExperimentList) -> None:
     """
     Save the experiment list to disk.
-    
+
     Args:
         experiment_list: The experiment list to save
     """
@@ -49,15 +49,15 @@ def save_experiments(experiment_list: ExperimentList) -> None:
 def load_experiments() -> ExperimentList:
     """
     Load the experiment list from disk.
-    
+
     Returns:
         The loaded experiment list, or a new one if the file doesn't exist
     """
     file_path = get_experiments_file_path()
-    
+
     if not file_path.exists():
         return ExperimentList()
-    
+
     try:
         with open(file_path, "r") as f:
             data = json.load(f)
@@ -73,10 +73,10 @@ def load_experiments() -> ExperimentList:
 def get_experiment_dir(experiment_id: str) -> Path:
     """
     Get the directory for storing experiment artifacts.
-    
+
     Args:
         experiment_id: ID of the experiment
-        
+
     Returns:
         Path to the experiment directory
     """
