@@ -162,7 +162,7 @@ class TestExperimentList:
 def mock_app_dir():
     """Fixture to mock the application directory."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        with patch("expman.models.storage.get_app_dir", return_value=Path(temp_dir)):
+        with patch("kepler.models.storage.get_app_dir", return_value=Path(temp_dir)):
             yield temp_dir
 
 

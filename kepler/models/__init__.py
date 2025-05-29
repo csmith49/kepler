@@ -4,8 +4,10 @@ Models for experiment management.
 from kepler.models.experiment import (
     Experiment, 
     ExperimentList, 
-    ExperimentStatus, 
-    ExperimentLog, 
+    ExperimentStatus
+)
+from kepler.models.log import (
+    ExperimentLog,
     LogType
 )
 from kepler.models.storage import (
