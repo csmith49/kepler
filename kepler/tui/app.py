@@ -185,7 +185,7 @@ class ExperimentTUI(App):
             )
 
             # Add a line to indicate how to view logs
-            lines.append(f"  Press L to view logs (select experiment first)")
+            lines.append("  Press L to view logs (select experiment first)")
             lines.append("")
 
         # Add summary information
