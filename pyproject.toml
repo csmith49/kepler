@@ -13,3 +13,8 @@ dependencies = [
     "textual>=3.2.0",
     "watchdog>=6.0.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.9.0",
+]
