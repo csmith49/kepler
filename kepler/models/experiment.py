@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-from kepler.models.log import ExperimentLog, LogType
+from kepler.models.log import ExperimentLog, LogKind
 
 
 class ExperimentStatus(str, Enum):
@@ -50,12 +50,12 @@ class Experiment(BaseModel):
         """Get the current status of the experiment."""
         # Check for error logs
         for log in reversed(self.logs):
-            if log.type == LogType.ERROR:
+            if log.kind == LogKind.ERROR:
                 return ExperimentStatus.ERROR
 
         # Check for end logs
         for log in reversed(self.logs):
-            if log.type == LogType.END:
+            if log.kind == LogKind.END:
                 if "interrupted" in log.message.lower():
                     return ExperimentStatus.INTERRUPTED
                 return ExperimentStatus.COMPLETED
@@ -67,17 +67,17 @@ class Experiment(BaseModel):
     def start_time(self) -> datetime:
         """Get the start time of the experiment."""
         for log in self.logs:
-            if log.type == LogType.START:
-                return log.timestamp
+            if log.kind == LogKind.START:
+                return log.created_at
         # If no start log, use the timestamp of the first log
-        return self.logs[0].timestamp if self.logs else datetime.now()
+        return self.logs[0].created_at if self.logs else datetime.now()
 
     @property
     def end_time(self) -> Optional[datetime]:
         """Get the end time of the experiment."""
         for log in reversed(self.logs):
-            if log.type == LogType.END or log.type == LogType.ERROR:
-                return log.timestamp
+            if log.kind == LogKind.END or log.kind == LogKind.ERROR:
+                return log.created_at
         return None
 
     @property
@@ -95,7 +95,7 @@ class Experiment(BaseModel):
         """Get the configuration of the experiment."""
         config = {}
         for log in self.logs:
-            if log.type == LogType.CONFIG:
+            if log.kind == LogKind.CONFIG:
                 config[log.data["key"]] = log.data["value"]
         return config
 
@@ -104,7 +104,7 @@ class Experiment(BaseModel):
         """Get the metrics of the experiment."""
         metrics = {}
         for log in self.logs:
-            if log.type == LogType.METRIC:
+            if log.kind == LogKind.METRIC:
                 metrics[log.data["name"]] = log.data["value"]
         return metrics
 
@@ -113,7 +113,7 @@ class Experiment(BaseModel):
         """Get the artifacts of the experiment."""
         artifacts = {}
         for log in self.logs:
-            if log.type == LogType.ARTIFACT:
+            if log.kind == LogKind.ARTIFACT:
                 artifacts[log.data["name"]] = log.data["path"]
         return artifacts
 
@@ -121,7 +121,7 @@ class Experiment(BaseModel):
     def error(self) -> Optional[str]:
         """Get the error message of the experiment."""
         for log in reversed(self.logs):
-            if log.type == LogType.ERROR:
+            if log.kind == LogKind.ERROR:
                 return log.message
         return None
 
@@ -130,7 +130,7 @@ class Experiment(BaseModel):
         """Get the tags of the experiment."""
         tags = []
         for log in self.logs:
-            if log.type == LogType.TAG:
+            if log.kind == LogKind.TAG:
                 tag = log.data["tag"]
                 if tag not in tags:
                     tags.append(tag)
@@ -140,7 +140,7 @@ class Experiment(BaseModel):
     def progress(self) -> Optional[Dict[str, Any]]:
         """Get the latest progress of the experiment."""
         for log in reversed(self.logs):
-            if log.type == LogType.PROGRESS:
+            if log.kind == LogKind.PROGRESS:
                 return log.data
         return None
 

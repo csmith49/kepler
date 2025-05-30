@@ -8,7 +8,19 @@ from kepler.models.experiment import (
 )
 from kepler.models.log import (
     ExperimentLog,
-    LogType
+    LogKind,
+    BaseLog,
+    StartLog,
+    EndLog,
+    ProgressLog,
+    MetricLog,
+    ArtifactLog,
+    ErrorLog,
+    InfoLog,
+    WarningLog,
+    ResourceLog,
+    ConfigLog,
+    TagLog
 )
 from kepler.models.storage import (
     get_app_dir,
@@ -23,7 +35,19 @@ __all__ = [
     "ExperimentList",
     "ExperimentStatus",
     "ExperimentLog",
-    "LogType",
+    "LogKind",
+    "BaseLog",
+    "StartLog",
+    "EndLog",
+    "ProgressLog",
+    "MetricLog",
+    "ArtifactLog",
+    "ErrorLog",
+    "InfoLog",
+    "WarningLog",
+    "ResourceLog",
+    "ConfigLog",
+    "TagLog",
     "get_app_dir",
     "get_experiment_dir",
     "get_experiments_file_path",
