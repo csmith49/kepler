@@ -32,131 +32,164 @@ class BaseLog(BaseModel):
     """
     created_at: datetime = Field(default_factory=datetime.now)
     kind: LogKind
-    message: str
+    message: str = ""
     data: Dict[str, Any] = Field(default_factory=dict)
 
 
 class StartLog(BaseLog):
     """Log entry for experiment start."""
     kind: Literal[LogKind.START] = LogKind.START
-    
-    def __init__(self, message: str = "Experiment started", **kwargs):
-        super().__init__(message=message, **kwargs)
+    message: str = "Experiment started"
 
 
 class EndLog(BaseLog):
     """Log entry for experiment end."""
     kind: Literal[LogKind.END] = LogKind.END
-    
-    def __init__(self, message: str = "Experiment completed", **kwargs):
-        super().__init__(message=message, **kwargs)
+    message: str = "Experiment completed"
 
 
 class ProgressLog(BaseLog):
     """Log entry for experiment progress."""
     kind: Literal[LogKind.PROGRESS] = LogKind.PROGRESS
+    current: int
+    total: int
+    message: str = ""
     
-    def __init__(self, current: int, total: int, message: str = "", **kwargs):
-        data = {
-            "current": current,
-            "total": total,
-            "percentage": current / total * 100,
-        }
-        super().__init__(
-            message=message or f"Progress: {current}/{total}",
-            data=data,
-            **kwargs
-        )
+    @property
+    def percentage(self) -> float:
+        """Calculate the progress percentage."""
+        return self.current / self.total * 100
+    
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set default message if not provided
+        if not self.message:
+            self.message = f"Progress: {self.current}/{self.total}"
+        
+        # Update data with progress information
+        self.data.update({
+            "current": self.current,
+            "total": self.total,
+            "percentage": self.percentage,
+        })
 
 
 class MetricLog(BaseLog):
     """Log entry for experiment metrics."""
     kind: Literal[LogKind.METRIC] = LogKind.METRIC
+    name: str
+    value: Any
+    message: str = ""  # Default empty message that will be set in post_init
     
-    def __init__(self, name: str, value: Any, **kwargs):
-        data = {"name": name, "value": value}
-        super().__init__(
-            message=f"Metric: {name} = {value}",
-            data=data,
-            **kwargs
-        )
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set message based on name and value if not provided
+        if not self.message:
+            self.message = f"Metric: {self.name} = {self.value}"
+        
+        # Update data with metric information
+        self.data.update({
+            "name": self.name,
+            "value": self.value,
+        })
 
 
 class ArtifactLog(BaseLog):
     """Log entry for experiment artifacts."""
     kind: Literal[LogKind.ARTIFACT] = LogKind.ARTIFACT
+    name: str
+    path: Path
+    message: str = ""  # Default empty message that will be set in post_init
     
-    def __init__(self, name: str, path: Path, **kwargs):
-        data = {"name": name, "path": path}
-        super().__init__(
-            message=f"Artifact saved: {name} at {path}",
-            data=data,
-            **kwargs
-        )
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set message based on name and path if not provided
+        if not self.message:
+            self.message = f"Artifact saved: {self.name} at {self.path}"
+        
+        # Update data with artifact information
+        self.data.update({
+            "name": self.name,
+            "path": self.path,
+        })
 
 
 class ErrorLog(BaseLog):
     """Log entry for experiment errors."""
     kind: Literal[LogKind.ERROR] = LogKind.ERROR
+    error_details: Optional[str] = None
     
-    def __init__(self, message: str, error_details: Optional[str] = None, **kwargs):
-        data = {"error_details": error_details} if error_details else {}
-        super().__init__(message=message, data=data, **kwargs)
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Update data with error details if provided
+        if self.error_details:
+            self.data.update({"error_details": self.error_details})
 
 
 class InfoLog(BaseLog):
     """Log entry for experiment information."""
     kind: Literal[LogKind.INFO] = LogKind.INFO
-    
-    def __init__(self, message: str, **kwargs):
-        super().__init__(message=message, **kwargs)
 
 
 class WarningLog(BaseLog):
     """Log entry for experiment warnings."""
     kind: Literal[LogKind.WARNING] = LogKind.WARNING
-    
-    def __init__(self, message: str, **kwargs):
-        super().__init__(message=message, **kwargs)
 
 
 class ResourceLog(BaseLog):
     """Log entry for experiment resource usage."""
     kind: Literal[LogKind.RESOURCE] = LogKind.RESOURCE
+    resource_type: str
+    usage: Any
+    message: str = ""  # Default empty message that will be set in post_init
     
-    def __init__(self, resource_type: str, usage: Any, **kwargs):
-        data = {"resource_type": resource_type, "usage": usage}
-        super().__init__(
-            message=f"Resource usage: {resource_type} = {usage}",
-            data=data,
-            **kwargs
-        )
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set message based on resource type and usage if not provided
+        if not self.message:
+            self.message = f"Resource usage: {self.resource_type} = {self.usage}"
+        
+        # Update data with resource information
+        self.data.update({
+            "resource_type": self.resource_type,
+            "usage": self.usage,
+        })
 
 
 class ConfigLog(BaseLog):
     """Log entry for experiment configuration."""
     kind: Literal[LogKind.CONFIG] = LogKind.CONFIG
+    key: str
+    value: Any
+    message: str = ""  # Default empty message that will be set in post_init
     
-    def __init__(self, key: str, value: Any, **kwargs):
-        data = {"key": key, "value": value}
-        super().__init__(
-            message=f"Config: {key} = {value}",
-            data=data,
-            **kwargs
-        )
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set message based on key and value if not provided
+        if not self.message:
+            self.message = f"Config: {self.key} = {self.value}"
+        
+        # Update data with config information
+        self.data.update({
+            "key": self.key,
+            "value": self.value,
+        })
 
 
 class TagLog(BaseLog):
     """Log entry for experiment tags."""
     kind: Literal[LogKind.TAG] = LogKind.TAG
+    tag: str
+    message: str = ""  # Default empty message that will be set in post_init
     
-    def __init__(self, tag: str, **kwargs):
-        data = {"tag": tag}
-        super().__init__(
-            message=f"Tag added: {tag}",
-            data=data,
-            **kwargs
-        )
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization processing."""
+        # Set message based on tag if not provided
+        if not self.message:
+            self.message = f"Tag added: {self.tag}"
+        
+        # Update data with tag information
+        self.data.update({"tag": self.tag})
 
 
 # For backward compatibility
@@ -167,6 +200,8 @@ class ExperimentLog(BaseLog):
     This class is maintained for backward compatibility.
     New code should use the specific log classes instead.
     """
+    # Required field for BaseLog, but will be set by factory methods
+    kind: LogKind = LogKind.INFO
     
     # Alias timestamp to created_at for backward compatibility
     @property
